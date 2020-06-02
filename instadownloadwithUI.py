@@ -59,6 +59,7 @@ def download(username):
             print()
             sleep(1.5)
 
+
 def action():
     download(entry.get())
 

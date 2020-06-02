@@ -71,6 +71,7 @@ def make_folder(username):
         os.system("rm -rf " + username)
         os.makedirs(PROJHOME + "/testdata/" + username)
 
+
 args = sys.argv[1:]
 print(args)
 
@@ -84,7 +85,7 @@ if "--users" in args or "-us" in args:
         except Exception as e:
             pass
 
-users = args[uidx + 1].split(',')
+users = args[uidx + 1].split(",")
 
 for user in users:
     download(user)
