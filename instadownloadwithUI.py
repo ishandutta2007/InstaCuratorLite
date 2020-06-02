@@ -14,15 +14,12 @@ except ImportError:
     import Tkinter as tkinter
 
 __version__ = "v.0.2.7"
-
-window = tkinter.Tk()
 PROJHOME = "/".join(str(Path().absolute()).split("/")[:6])
-
 def action():
     download(entry.get())
 
-
 # Building the UI
+window = tkinter.Tk()
 window.configure(background="grey90")
 window.title("insta-downloader" + __version__)
 window.geometry("300x200")
