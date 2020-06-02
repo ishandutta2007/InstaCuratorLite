@@ -2,7 +2,6 @@ from time import sleep
 import requests
 import urllib
 import os
-import sys
 import json
 import urllib.request
 import pprint as pp
@@ -28,7 +27,7 @@ def download(username):
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0"
     }
 
-    make_folder(username)  # makes folder with given username
+    make_folder(entry.get())  # makes folder with given username
 
     # while more_available:
     if not end_cursors:
@@ -40,7 +39,7 @@ def download(username):
         data = response.json()
     except:
         print("\033[91mInvalid username!\033[0m")
-        os.removedirs(PROJHOME + "/testdata/" + username)
+        os.removedirs(PROJHOME + "/testdata/" + entry.get())
         return
 
     nodes = data["graphql"]["user"]["edge_owner_to_timeline_media"]["edges"]
@@ -51,7 +50,7 @@ def download(username):
         print(display_url)
         display_url = display_url.replace("s640x640", "s1080x1080")
         file_name = display_url.split("/")[-1].split("?")[0]
-        path = PROJHOME + "/testdata/" + username + "/" + username + "_" + file_name
+        path = PROJHOME + "/testdata/" + entry.get() + "/" + username + "_" + file_name
         if os.path.exists(path):
             print("Already Downloaded")
         else:
@@ -59,6 +58,9 @@ def download(username):
             print("Downloaded: " + path)
             print()
             sleep(1.5)
+
+def action():
+    download(entry.get())
 
 
 # Make folder with given username
@@ -71,20 +73,24 @@ def make_folder(username):
         os.system("rm -rf " + username)
         os.makedirs(PROJHOME + "/testdata/" + username)
 
-args = sys.argv[1:]
-print(args)
 
-uidx = -2
-if "--users" in args or "-us" in args:
-    try:
-        uidx = args.index("--users")
-    except Exception as e:
-        try:
-            uidx = args.index("-us")
-        except Exception as e:
-            pass
+# Building the UI
+window.configure(background="grey90")
+window.title("insta-downloader" + __version__)
+window.geometry("300x200")
+window.resizable(False, False)
 
-users = args[uidx + 1].split(',')
+entry = tkinter.Entry(window)
+entry.place(x=70, y=68)
+entry.configure(highlightbackground="grey90")
 
-for user in users:
-    download(user)
+button = tkinter.Button(window, text="Download")
+button.place(x=110, y=120)
+button.configure(command=lambda: action(), highlightbackground="grey90")
+
+notice = tkinter.Label(
+    window, text="insta-dl is not affiliated with Instagram", fg="grey60", bg="grey90"
+)
+notice.place(x=30, y=180)
+
+window.mainloop()
