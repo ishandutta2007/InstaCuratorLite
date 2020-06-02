@@ -30,7 +30,9 @@ def merge_and_copy_sources(target_profile, source_profiles, downloaded_path, des
         print(thisprofile)
         src_files = os.listdir(downloaded_path + "/" + thisprofile)
         for file_name in src_files:
-            full_file_name = os.path.join(downloaded_path + "/" + thisprofile, file_name)
+            full_file_name = os.path.join(
+                downloaded_path + "/" + thisprofile, file_name
+            )
             if os.path.isfile(full_file_name):
                 shutil.copy(full_file_name, dest_path + "/" + target_profile)
                 print("copying", full_file_name, "to", dest_path + "/" + target_profile)
@@ -126,7 +128,6 @@ if sourceuser_idx > -1:
 
     for user in sourceusernames:
         download(user)
-
 
     destuser_idx = -2
     if "--destusers" in args or "-du" in args:
