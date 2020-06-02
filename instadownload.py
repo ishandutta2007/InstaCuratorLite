@@ -45,20 +45,39 @@ def download(username):
 
     nodes = data["graphql"]["user"]["edge_owner_to_timeline_media"]["edges"]
     display_urls = []
+    captions = []
     for node in nodes:
-        display_urls.append(node["node"]["display_url"])
-    for display_url in display_urls:
+        inndernode = node["node"]  # inndernode["accessibility_caption"]
+        display_urls.append(inndernode["display_url"])
+        try:
+            caption = inndernode["edge_media_to_caption"]["edges"][0]["node"]["text"]
+            captions.append(caption)
+        except Exception as e:
+            captions.append("")
+
+    for idx, display_url in enumerate(display_urls):
         print(display_url)
         display_url = display_url.replace("s640x640", "s1080x1080")
         file_name = display_url.split("/")[-1].split("?")[0]
         path = PROJHOME + "/testdata/" + username + "/" + username + "_" + file_name
         if os.path.exists(path):
-            print("Already Downloaded")
+            print("Already Downloaded image")
         else:
             urllib.request.urlretrieve(display_url, path)
-            print("Downloaded: " + path)
-            print()
-            sleep(1.5)
+            print("Downloaded image to: " + path)
+        print(captions[idx])
+        file_name = display_url.split("/")[-1].split("?")[0]
+        path = PROJHOME + "/testdata/" + username + "/" + username + "_" + file_name
+        path = path.replace(".jpg", ".txt")
+        if os.path.exists(path):
+            print("Already Written caption")
+        else:
+            f = open(path, "a")
+            f.write(str(captions[idx]))
+            f.close()
+            print("Written caption to: " + path)
+        print()
+        sleep(1.5)
 
 
 # Make folder with given username

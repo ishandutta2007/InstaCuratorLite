@@ -8,6 +8,7 @@ import pprint as pp
 from pathlib import Path
 
 from instadownload import download, make_folder
+
 try:
     import tkinter
 except ImportError:
@@ -15,8 +16,11 @@ except ImportError:
 
 __version__ = "v.0.2.7"
 PROJHOME = "/".join(str(Path().absolute()).split("/")[:6])
+
+
 def action():
     download(entry.get())
+
 
 # Building the UI
 window = tkinter.Tk()
