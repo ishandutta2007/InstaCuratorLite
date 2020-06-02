@@ -85,7 +85,8 @@ if "--users" in args or "-us" in args:
         except Exception as e:
             pass
 
-users = args[uidx + 1].split(",")
+if uidx > -1:
+    users = args[uidx + 1].split(",")
 
-for user in users:
-    download(user)
+    for user in users:
+        download(user)
