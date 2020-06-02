@@ -50,7 +50,7 @@ def download(username):
         print(display_url)
         display_url = display_url.replace("s640x640", "s1080x1080")
         file_name = display_url.split("/")[-1].split("?")[0]
-        path = PROJHOME + "/" + entry.get() + "/" + username + "_" + file_name
+        path = PROJHOME + "/testdata/" + entry.get() + "/" + username + "_" + file_name
         urllib.request.urlretrieve(display_url, path)
         print("Downloaded: " + path)
         print()
