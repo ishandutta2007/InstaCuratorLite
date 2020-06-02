@@ -3,10 +3,12 @@ import requests
 import urllib
 import os
 import sys
+import shutil
 import json
 import urllib.request
 import pprint as pp
 from pathlib import Path
+from datetime import date
 
 try:
     import tkinter
@@ -15,8 +17,23 @@ except ImportError:
 
 __version__ = "v.0.2.7"
 
-window = tkinter.Tk()
 PROJHOME = "/".join(str(Path().absolute()).split("/")[:6])
+MYDATAPATH = PROJHOME + "/testdata/"
+MYUPLOADDIR = str(Path.home()) + "/Dropbox"
+today = date.today()
+
+
+def merge_and_copy_sources(target_profile, source_profiles, downloaded_path, dest_path):
+    make_folder(MYUPLOADDIR, target_profile)
+    print(target_profile, source_profiles)
+    for thisprofile in source_profiles:
+        print(thisprofile)
+        src_files = os.listdir(downloaded_path + "/" + thisprofile)
+        for file_name in src_files:
+            full_file_name = os.path.join(downloaded_path + "/" + thisprofile, file_name)
+            if os.path.isfile(full_file_name):
+                shutil.copy(full_file_name, dest_path + "/" + target_profile)
+                print("copying", full_file_name, "to", dest_path + "/" + target_profile)
 
 
 def download(username):
@@ -28,7 +45,7 @@ def download(username):
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0"
     }
 
-    make_folder(username)  # makes folder with given username
+    make_folder(MYDATAPATH, username)  # makes folder with given username
 
     # while more_available:
     if not end_cursors:
@@ -40,7 +57,7 @@ def download(username):
         data = response.json()
     except:
         print("\033[91mInvalid username!\033[0m")
-        os.removedirs(PROJHOME + "/testdata/" + username)
+        os.removedirs(MYDATAPATH + username)
         return
 
     nodes = data["graphql"]["user"]["edge_owner_to_timeline_media"]["edges"]
@@ -59,7 +76,7 @@ def download(username):
         print(display_url)
         display_url = display_url.replace("s640x640", "s1080x1080")
         file_name = display_url.split("/")[-1].split("?")[0]
-        path = PROJHOME + "/testdata/" + username + "/" + username + "_" + file_name
+        path = MYDATAPATH + username + "/" + username + "_" + file_name
         if os.path.exists(path):
             print("Already Downloaded image")
         else:
@@ -67,7 +84,7 @@ def download(username):
             print("Downloaded image to: " + path)
         print(captions[idx])
         file_name = display_url.split("/")[-1].split("?")[0]
-        path = PROJHOME + "/testdata/" + username + "/" + username + "_" + file_name
+        path = MYDATAPATH + username + "/" + username + "_" + file_name
         path = path.replace(".jpg", ".txt")
         if os.path.exists(path):
             print("Already Written caption")
@@ -80,32 +97,52 @@ def download(username):
         sleep(1.5)
 
 
-# Make folder with given username
-def make_folder(username):
-    if os.path.exists(PROJHOME + "/testdata/" + username):
+def make_folder(path, username):
+    if os.path.exists(path + "/" + username):
         return
     try:
-        os.makedirs(PROJHOME + "/testdata/" + username)
+        os.makedirs(path + "/" + username)
     except OSError:
-        os.system("rm -rf " + username)
-        os.makedirs(PROJHOME + "/testdata/" + username)
+        os.system("rm -rf " + path + "/" + username)
+        os.makedirs(path + username)
 
 
 args = sys.argv[1:]
 print(args)
 
-uidx = -2
-if "--users" in args or "-us" in args:
+
+sourceuser_idx = -2
+if "--sourceusers" in args or "-su" in args:
     try:
-        uidx = args.index("--users")
+        sourceuser_idx = args.index("--sourceusers")
     except Exception as e:
         try:
-            uidx = args.index("-us")
+            sourceuser_idx = args.index("-su")
         except Exception as e:
             pass
 
-if uidx > -1:
-    users = args[uidx + 1].split(",")
+if sourceuser_idx > -1:
+    sourceusernames = args[sourceuser_idx + 1].split(",")
 
-    for user in users:
-        download(user)
+    # for user in sourceusernames:
+    #     download(user)
+
+
+    destuser_idx = -2
+    if "--destusers" in args or "-du" in args:
+        try:
+            destuser_idx = args.index("--destusers")
+        except Exception as e:
+            try:
+                destuser_idx = args.index("-du")
+            except Exception as e:
+                pass
+
+    if destuser_idx > -1:
+        destusername = args[destuser_idx + 1]
+        merge_and_copy_sources(
+            target_profile=destusername,
+            source_profiles=sourceusernames,
+            downloaded_path=MYDATAPATH,
+            dest_path=MYUPLOADDIR,
+        )
