@@ -7,13 +7,9 @@ import shutil
 import json
 import urllib.request
 import pprint as pp
+import random
 from pathlib import Path
 from datetime import date
-
-try:
-    import tkinter
-except ImportError:
-    import Tkinter as tkinter
 
 __version__ = "v.0.2.7"
 
@@ -96,7 +92,7 @@ def download(username):
             f.close()
             print("Written caption to: " + path)
         print()
-        sleep(1.5)
+        sleep(random.randint(0,9))
 
 
 def make_folder(path, username):
