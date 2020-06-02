@@ -124,8 +124,8 @@ if "--sourceusers" in args or "-su" in args:
 if sourceuser_idx > -1:
     sourceusernames = args[sourceuser_idx + 1].split(",")
 
-    # for user in sourceusernames:
-    #     download(user)
+    for user in sourceusernames:
+        download(user)
 
 
     destuser_idx = -2
